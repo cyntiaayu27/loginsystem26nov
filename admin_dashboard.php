@@ -1,10 +1,11 @@
 <?php
 session_start();
-if ($_SESSION['role'] !== 'admin') {
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header('Location: login.php');
     exit();
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +15,7 @@ if ($_SESSION['role'] !== 'admin') {
 </head>
 <body>
     <h1>Selamat datang, Admin <?php echo htmlspecialchars($_SESSION['name']); ?>!</h1>
-    <p>Ini adalah halaman Admin.</p>
+    <p>Ini adalah halaman khusus Admin.</p>
     <a href="logout.php">Logout</a>
 </body>
 </html>

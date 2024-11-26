@@ -1,32 +1,45 @@
 <?php
-session_start(); // Memulai sesi untuk menyimpan data user
+session_start();
 
-// Cek jika form login telah di-submit
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $name = $_POST['name'];
-    $password = $_POST['password'];
-    $role = $_POST['role'];
-
-    // Dummy data untuk autentikasi
-    $users = [
-        'admin' => ['name' => 'admin', 'password' => 'admin123'],
-        'customer' => ['name' => 'customer', 'password' => 'customer123']
-    ];
-
-    // Autentikasi berdasarkan peran
-    if ($role == 'admin' && $name == $users['admin']['name'] && $password == $users['admin']['password']) {
-        $_SESSION['role'] = 'admin';
-        $_SESSION['name'] = $name;
+// Cek apakah pengguna sudah login
+if (isset($_SESSION['role'])) {
+    if ($_SESSION['role'] === 'admin') {
         header('Location: admin_dashboard.php');
         exit();
-    } elseif ($role == 'customer' && $name == $users['customer']['name'] && $password == $users['customer']['password']) {
-        $_SESSION['role'] = 'customer';
-        $_SESSION['name'] = $name;
+    } elseif ($_SESSION['role'] === 'customer') {
         header('Location: customer_dashboard.php');
         exit();
-    } else {
-        $error = "Nama atau password salah, atau peran tidak sesuai.";
     }
+}
+
+// Dummy data user untuk autentikasi
+$users = [
+    'admin' => ['name' => 'admin', 'password' => 'admin123', 'role' => 'admin'],
+    'customer' => ['name' => 'customer', 'password' => 'customer123', 'role' => 'customer']
+];
+
+// Proses login
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $name = $_POST['name'];
+    $password = $_POST['password'];
+
+    foreach ($users as $user) {
+        if ($user['name'] === $name && $user['password'] === $password) {
+            $_SESSION['name'] = $user['name'];
+            $_SESSION['role'] = $user['role'];
+
+            // Redirect berdasarkan role
+            if ($user['role'] === 'admin') {
+                header('Location: admin_dashboard.php');
+                exit();
+            } elseif ($user['role'] === 'customer') {
+                header('Location: customer_dashboard.php');
+                exit();
+            }
+        }
+    }
+
+    $error = "Nama atau password salah.";
 }
 ?>
 
@@ -54,13 +67,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
                         <input type="password" name="password" id="password" class="form-control" placeholder="Masukkan password" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="role" class="form-label">Login sebagai</label>
-                        <select name="role" id="role" class="form-select" required>
-                            <option value="admin">Admin</option>
-                            <option value="customer">Customer</option>
-                        </select>
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Login</button>
                 </form>

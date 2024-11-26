@@ -1,10 +1,11 @@
 <?php
 session_start();
-if ($_SESSION['role'] !== 'customer') {
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'customer') {
     header('Location: login.php');
     exit();
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +15,7 @@ if ($_SESSION['role'] !== 'customer') {
 </head>
 <body>
     <h1>Selamat datang, Customer <?php echo htmlspecialchars($_SESSION['name']); ?>!</h1>
-    <p>Ini adalah halaman Customer.</p>
+    <p>Ini adalah halaman khusus Customer.</p>
     <a href="logout.php">Logout</a>
 </body>
 </html>
